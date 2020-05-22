@@ -1,0 +1,42 @@
+import React from 'react'
+import {Redirect, Route as RRDRoute} from 'react-router-dom'
+
+function Private({children, ...rest}) {
+  const isAuthenticated = !!localStorage.getItem('gh_access_token')
+
+  return (
+    <RRDRoute
+      {...rest}
+      render={({location}) => (
+        isAuthenticated ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: {from: location}
+            }}
+          />
+        )
+      )}
+    />
+  )
+}
+
+function Route({
+ path,
+ children,
+ exact = false,
+ layout = true,
+ private: isPrivate = false,
+}) {
+  const RComponent = isPrivate ? Private : RRDRoute
+
+  return (
+    <RComponent exact={exact} path={path}>
+      {children}
+    </RComponent>
+  )
+}
+
+export default Route
